@@ -1,0 +1,455 @@
+package GUI;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import AlgoGenetique.AG;
+import AlgoGenetique.Population;
+import PSO.PSO_Algo;
+import RecuitSimule.RecuitSimule;
+import RecuitSimule.Recuit_Simule;
+import TSP.Chemin;
+import TSP.Ville;
+import TwoOpt.TwoOpt;
+
+public class interface_1 extends JFrame{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	JPanel configure_algo;
+	ArrayList<Ville> villes = new ArrayList<>();
+	int nombre_execution = 10;
+	int min_dist[];
+	double tmp_exe[];
+	JPanel statistique = new JPanel();
+	JLabel Min_dist = new JLabel(" ");
+	JLabel Max_dist = new JLabel(" ");
+	JLabel Min_tmp = new JLabel(" ");
+	JLabel Max_tmp = new JLabel(" ");
+	JLabel Moyenne_dist = new JLabel(" ");
+	JLabel Moyenne_tmp = new JLabel(" ");
+	JPanel graphique = new JPanel();
+	DecimalFormat df = new DecimalFormat("0.000");
+	public interface_1() {
+		this.setTitle("TSP_algorithme_optimisation");
+		this.setSize(1000, 700);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setLocationRelativeTo(null);
+		this.setLayout(new BorderLayout());
+		// les param�tres
+		JPanel parametre = new JPanel();
+		parametre.setPreferredSize(new Dimension(250,500));
+		parametre.setLayout(new BorderLayout());
+		parametre.setBackground(Color.CYAN);
+		JPanel pan_top = new JPanel();
+		pan_top.setLayout(new GridLayout(5,1));
+		pan_top.add(new JLabel("  Param�tres"));
+		pan_top.add(new JLabel("  Choisir une m�thode"));
+		JComboBox<String> list_algo = new JComboBox<String>();
+		list_algo.addItem("PSO");
+		list_algo.addItem("AG");
+		list_algo.addItem("RecuitSimule");
+		list_algo.addItem("EHO");
+		list_algo.addItem("TwoOpt");
+		list_algo.addItem("EHO_2opt");
+		pan_top.add(list_algo);
+		pan_top.add(new JLabel("  Choisir une instance de TSP"));
+		JComboBox<String> list_TSP = new JComboBox<String>();
+		list_TSP.addItem("Eil51");
+		list_TSP.addItem("Berlin52");
+		list_TSP.addItem("St70");
+		list_TSP.addItem("Pr76");
+		list_TSP.addItem("Eil76");
+		list_TSP.addItem("Kroa100");
+		list_TSP.addItem("Krob100");
+		list_TSP.addItem("Kroc100");
+		list_TSP.addItem("Krod100");
+		list_TSP.addItem("Kroe100");
+		list_TSP.addItem("Eil101");
+		list_TSP.addItem("Lin105");
+		list_TSP.addItem("Pr107");
+		list_TSP.addItem("Pr124");
+		list_TSP.addItem("Bier127");
+		list_TSP.addItem("Ch130");
+		list_TSP.addItem("Pr136");
+		list_TSP.addItem("Ch150");
+		list_TSP.addItem("Kroa150");
+		list_TSP.addItem("Krob150");
+		pan_top.add(list_TSP);
+		parametre.add(pan_top,BorderLayout.NORTH);
+		//-------configuration algo
+		configure_algo =  new JPanel();
+		list_algo.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				String algo = (String)list_algo.getSelectedItem();
+				switch (algo) {
+				case "PSO":
+					configure_algo.removeAll();
+					configure_algo.repaint();
+					configure_algo.setLayout(new GridLayout(10,2));
+					configure_algo.add(new JLabel("par1"));
+					configure_algo.add(new JTextField());
+					configure_algo.add(new JLabel("par2"));
+					configure_algo.add(new JTextField());
+					configure_algo.add(new JLabel("par3"));
+					configure_algo.add(new JTextField());
+					setVisible(true);
+					
+					break;
+
+				case "AG":
+					configure_algo.removeAll();
+					configure_algo.repaint();
+					setVisible(true);
+					break;
+				}
+				
+			}
+		});
+		parametre.add(configure_algo,BorderLayout.CENTER);
+		//--------
+		JPanel pan_bottom = new JPanel(new GridLayout(2,1));
+		JButton valider = new JButton("Valider");
+		valider.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				String inst = (String)list_TSP.getSelectedItem();
+				inst = inst+".txt";
+				inst = inst.toLowerCase();
+				try{
+		            Scanner input = new Scanner(new File("C:\\Users\\Said\\Desktop\\Optimisation\\Instances_TSP\\"+inst));
+		            //int i=0;
+		            while (input.hasNextLine())
+		            {
+		                String line = input.nextLine();
+		                String[] line_array = line.split(" ");
+		                //ArrayList<Double> distances = new ArrayList<>();
+		                String nom_ville= line_array[0];
+		                double x= Double.parseDouble(line_array[1]);
+		                double y= Double.parseDouble(line_array[2]);
+		                //for(int j=0;j<line_array.length;j++) {
+		                	//distances.add(Double.parseDouble(line_array[j]));
+		                //}
+		                villes.add(new Ville(nom_ville,x,y));
+		               // i++;
+		            }
+		        }catch (Exception ex)
+		        {
+		            System.out.println("Error : "+ex.getMessage() +" !");
+		            ex.printStackTrace();
+		        }
+				
+			}
+		});
+		statistique.setPreferredSize(new Dimension(750,50));
+		statistique.setLayout(new GridLayout(4,4));
+		statistique.add(new JLabel("Statistique : "));
+		statistique.add(new JLabel(" "));
+		statistique.add(new JLabel(" "));
+		statistique.add(new JLabel(" "));
+		statistique.add(new JLabel(" "));
+		statistique.add(new JLabel("Min "));
+		statistique.add(new JLabel("Max "));
+		statistique.add(new JLabel("Moyenne "));
+		statistique.add(new JLabel("Distance "));
+		statistique.add(Min_dist);
+		statistique.add(Max_dist);
+		statistique.add(Moyenne_dist);
+		statistique.add(new JLabel("temps_exe "));
+		statistique.add(Min_tmp);
+		statistique.add(Max_tmp);
+		statistique.add(Moyenne_tmp);
+		
+	
+		
+		JButton Demarer = new JButton("D�marer");
+		Demarer.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				String algo = (String)list_algo.getSelectedItem();
+				
+				min_dist=new int[nombre_execution];
+				tmp_exe = new double[nombre_execution];
+				//Chemin ch=new Chemin();
+				ArrayList<Chemin> ch = new ArrayList<>();
+				switch (algo) {
+				case "PSO":
+					for(int i=0;i<nombre_execution;i++) {
+				        Chemin Chemin = new Chemin(villes);
+				        // Initialisation de la premi�re solution
+				        PSO_Algo pso = new PSO_Algo(Chemin);
+				        long startTime = System.nanoTime();
+				        pso.Plus_court_chemin();
+				        min_dist[i]=pso.min_distance;
+				        long endTime = System.nanoTime();
+				        System.out.println();
+				        System.out.println("============ Tempe d'execution =========== ");
+				        System.out.println(" T = "+(endTime-startTime)/1000000000.0 +"s");
+				        tmp_exe[i]=(endTime-startTime)/1000000000.0;
+						}
+					
+					break;
+				case "AG":
+					System.out.println("AG");
+					for(int i=0;i<nombre_execution;i++) {
+					Population population = new Population(30, villes);
+					AG ag = new AG(villes);
+					System.out.println("initialisation");
+					long startTime = System.nanoTime();
+					int generation_nbr = 0;
+					while (generation_nbr<12500) {
+						//System.out.println("Generation N = "+generation_nbr);
+						population = ag.evolve(population);
+						population.sort_Chemins();
+						generation_nbr++;
+					}
+					long endTime = System.nanoTime();
+					min_dist[i]= (int)population.getChemins().get(0).getDistance_total();
+					tmp_exe[i]=(endTime-startTime)/1000000000.0;
+					System.out.println("Distance minimal : "+(int)population.getChemins().get(0).getDistance_total());
+					System.out.println("Chemin : "+population.getChemins().get(0).printChemin());
+					System.out.println("Time : "+(endTime-startTime)/1000000000.0);
+					}
+					break;
+				case "RecuitSimule":
+					
+					for(int i=0;i<nombre_execution;i++) {
+					Chemin chemin = new Chemin(villes);
+					
+					Recuit_Simule rs = new Recuit_Simule(chemin);
+					long startTime = System.nanoTime();
+					ch.add(rs.Start());
+					long endTime = System.nanoTime();
+					min_dist[i] = (int)ch.get(i).getDistance_total();
+					tmp_exe[i]=(endTime-startTime)/1000000000.0;
+					
+					}
+					break;
+				case "EHO":
+					
+					for(int i=0;i<nombre_execution;i++) {
+						//Collections.shuffle(villes);
+						Chemin chemin = new Chemin(villes);
+						EHO eho = new EHO(chemin);
+
+						long startTime = System.nanoTime();
+						eho.optimiser(200);
+						long endTime = System.nanoTime();
+						System.out.println("min dist = "+(int)eho.getBestSolution().getDistance_total());
+						min_dist[i] = (int)eho.getBestSolution().getDistance_total();
+						tmp_exe[i]=(endTime-startTime)/1000000000.0;
+					}
+					break;
+				case "TwoOpt":
+					for(int i=0;i<nombre_execution;i++) {
+						//Collections.shuffle(villes);
+						Chemin chemin = new Chemin(villes);
+						long startTime = System.nanoTime();
+						TwoOpt Two_opt = new TwoOpt(chemin);
+						long endTime = System.nanoTime();
+						Chemin best_Solution = Two_opt.TwoOpt_Start();
+						min_dist[i] = (int)best_Solution.getDistance_total();
+						tmp_exe[i]=(endTime-startTime)/1000000000.0;
+						
+					}
+					break;
+				case "EHO_2opt":
+					for(int i=0;i<nombre_execution;i++) {
+						//Collections.shuffle(villes);
+						Chemin chemin = new Chemin(villes);
+						long startTime = System.nanoTime();
+						EHO_2opt eho = new EHO_2opt(chemin);
+						eho.optimiser(10);
+						long endTime = System.nanoTime();
+						Chemin best_Solution = eho.getBestSolution();
+						min_dist[i] = (int)best_Solution.getDistance_total();
+						tmp_exe[i]=(endTime-startTime)/1000000000.0;
+					}
+					break;
+				}
+				
+				int indxe_min=0;
+				int min = min_dist[0];
+				int somme_dist = 0;
+				for(int i=0;i<nombre_execution;i++) {
+					if(min>min_dist[i])
+						{
+						min=min_dist[i];
+						indxe_min=i;
+						}
+					somme_dist = somme_dist + min_dist[i];
+					
+				}
+				int indxe_max=0;
+				int max = min_dist[0];
+				double somme_tmp = 0;
+				for(int i=0;i<nombre_execution;i++) {
+					if(max<min_dist[i])
+						{
+						max=min_dist[i];
+						indxe_max=i;
+						}
+					somme_tmp = somme_tmp + tmp_exe[i];
+					
+				}
+				Min_dist.setText(" "+min);
+				Max_dist.setText(" "+max);
+				Moyenne_dist.setText(" "+(somme_dist/nombre_execution));
+				Min_tmp.setText(" "+tmp_exe[indxe_min]+" s");
+				Max_tmp.setText(" "+tmp_exe[indxe_max]+" s");
+				Moyenne_tmp.setText(" "+(somme_tmp/nombre_execution)+" s");
+				
+				//DrawGraphique(graphique.getGraphics(),graphique.getWidth(),graphique.getHeight(),min_dist, tmp_exe, nombre_execution);
+				DrawChemin(graphique.getGraphics(),graphique.getWidth(),graphique.getHeight(),ch.get(indxe_min));
+				
+				
+			}
+		});
+		pan_bottom.add(valider);
+		pan_bottom.add(Demarer);
+		parametre.add(pan_bottom,BorderLayout.SOUTH);
+		
+		this.add(parametre,BorderLayout.WEST);
+		//centre_pan
+		JPanel pan_centre = new JPanel(new BorderLayout());
+		JLabel resultats = new JLabel(" --- R�sultats ---");
+		pan_centre.add(resultats,BorderLayout.NORTH);
+		
+		graphique.setPreferredSize(new Dimension(750,460));
+		graphique.setBackground(Color.white);
+		pan_centre.add(graphique,BorderLayout.CENTER);
+		
+		
+		pan_centre.add(statistique,BorderLayout.SOUTH);
+		
+		this.add(pan_centre,BorderLayout.CENTER);
+		//bottom_pan
+		JPanel bottom_pan = new JPanel(new BorderLayout());
+		bottom_pan.setPreferredSize(new Dimension(1000,150));
+		JLabel Description = new JLabel("Description");
+		JLabel Description_algo = new JLabel();
+		Description_algo.setBackground(Color.WHITE);
+		bottom_pan.add(Description,BorderLayout.NORTH);
+		bottom_pan.add(Description_algo,BorderLayout.CENTER);
+		this.add(bottom_pan,BorderLayout.SOUTH);
+		
+		
+				
+		this.setVisible(true);
+	
+	}
+	public double min(double[] tab,int size) {
+		double min = tab[0];
+		for(int i=0;i<size;i++) {
+			if(min>tab[i])
+				min=tab[i];
+		}
+		return min;
+		
+	}
+	public void DrawGraphique(Graphics Gpanel,int width,int height,int[] distances,double[] tmp_exe,int taille) {
+		int max_distance = distances[0];
+		int min_distance = distances[0];
+		for(int i=0;i<taille;i++) {
+			if(max_distance<distances[i]) {
+				max_distance=distances[i];
+			}
+			if(min_distance>distances[i]) {
+				min_distance=distances[i];
+			}
+		}
+		int j = (width-100)/taille;
+		Gpanel.setColor(Color.blue);
+		Gpanel.drawLine(50, 0, 50, height-25);
+		Gpanel.drawLine(50, height-25, width, height-25);
+		int k = (height-35)/taille;
+		int pas_dist = max_distance/taille;
+		int pas = (int)(j*0.2);
+		System.out.println("pas == "+pas);
+		
+		for(int i=0;i<taille;i++) {
+			System.out.println("oook oook"+(int)0.9*j+"  "+j);
+			//axe X
+			Gpanel.setColor(Color.red);
+			Gpanel.drawLine(j*(i+1), height-40,(i+1)*j, height-20);
+			Gpanel.setColor(Color.black);
+			Gpanel.drawString("i="+(i+1), j*(i+1)-4, height-10);
+			//axe Y
+			Gpanel.setColor(Color.red);
+			Gpanel.drawLine(25, height-(i+1)*k -25,50, height-(i+1)*k-25);
+			Gpanel.setColor(Color.black);
+			Gpanel.drawString(""+(i+1)*pas_dist, 25, height-(i+1)*k-25);
+			//barre
+			Gpanel.setColor(Color.yellow);
+			Gpanel.fillRect((i+1)*j-pas/2, height-(height*distances[i]/max_distance)+10,pas, height*distances[i]/max_distance -35);
+			Gpanel.setColor(Color.black);
+			Gpanel.drawString("(d="+distances[i]+" ,t="+df.format(tmp_exe[i])+"s)", (i+1)*j-pas, height-(height*distances[i]/max_distance)+10);
+			
+			
+		}
+	}
+	public void DrawChemin(Graphics Gpanel,int width,int height,Chemin chemin) {
+		int max_x = 0;
+		int max_y = 0;
+		for(int i=0;i<chemin.villes.size();i++) {
+			if(max_x<chemin.villes.get(i).latitude) {
+				max_x=(int)chemin.villes.get(i).latitude;
+			}
+			if(max_y<chemin.villes.get(i).longitude) {
+				max_y = (int)chemin.villes.get(i).longitude;
+			}
+		}
+		
+		for(int i=0;i<chemin.villes.size();i++) {
+			Gpanel.setColor(Color.red);
+			int x = (int)((chemin.villes.get(i).latitude*width)/max_x);
+			int y = (int)((chemin.villes.get(i).longitude*height)/max_y);
+			Gpanel.fillOval(x, y, 4, 4);
+			Gpanel.setColor(Color.BLACK);
+			Gpanel.drawString(chemin.villes.get(i).nom, x-1, y-1);
+			
+		}
+		Gpanel.setColor(Color.black);
+		for(int i=0;i<chemin.villes.size()-1;i++) {
+			int x1 = (int)((chemin.villes.get(i).latitude*width)/max_x);
+			int y1 = (int)((chemin.villes.get(i).longitude*height)/max_y);
+			int x2 = (int)((chemin.villes.get(i+1).latitude*width)/max_x);
+			int y2 = (int)((chemin.villes.get(i+1).longitude*height)/max_y);
+			Gpanel.drawLine(x1, y1, x2, y2);
+		}
+		int x1 = (int)((chemin.villes.get(0).latitude*width)/max_x);
+		int y1 = (int)((chemin.villes.get(0).longitude*height)/max_y);
+		int x2 = (int)((chemin.villes.get(chemin.villes.size()-1).latitude*width)/max_x);
+		int y2 = (int)((chemin.villes.get(chemin.villes.size()-1).longitude*height)/max_y);
+		Gpanel.drawLine(x1, y1, x2, y2);
+		
+		
+		
+	}
+}
+

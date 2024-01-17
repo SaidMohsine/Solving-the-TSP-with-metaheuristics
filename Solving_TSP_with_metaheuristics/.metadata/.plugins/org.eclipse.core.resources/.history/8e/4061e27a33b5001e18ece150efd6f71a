@@ -1,0 +1,92 @@
+package GUI;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Scanner;
+
+import RecuitSimule.Recuit_Simule;
+import RecuitSimule.Utility;
+import TSP.Chemin;
+import TSP.Ville;
+
+public class Main {
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		//Random random = new Random();
+		//while(true)
+		//	System.out.println(Utility.randomInt(0, 101));
+			//System.out.println((int)(random.nextDouble()*101));
+		interface_1 fram = new interface_1();
+		/*ArrayList<Ville> villes = new ArrayList<>();
+		Main m = new Main();
+		try{
+            Scanner input = new Scanner(new File("C:\\Users\\user\\Desktop\\Optimisation\\Code_sources\\Opt_Algs_TAP\\src\\Instances_TSP\\berlin52.txt"));
+            //int i=0;
+            while (input.hasNextLine())
+            {
+            	 String line = input.nextLine();
+	                String[] line_array = line.split(" ");
+	                //ArrayList<Double> distances = new ArrayList<>();
+	                String nom_ville= line_array[0];
+	                double x= Double.parseDouble(line_array[1]);
+	                double y= Double.parseDouble(line_array[2]);
+	                //for(int j=0;j<line_array.length;j++) {
+	                	//distances.add(Double.parseDouble(line_array[j]));
+	                //}
+	                villes.add(new Ville(nom_ville,x,y));
+	               // i++; 
+            }
+        }catch (Exception ex)
+        {
+            System.out.println("Error : "+ex.getMessage() +" !");
+        }
+		/*
+		//population
+		Population population = new Population(20, villes);
+		AG ag = new AG(villes);
+		int generation_nbr = 0;
+		while (generation_nbr<5000) {
+			System.out.println("Generation N = "+generation_nbr);
+			population = ag.evolve(population);
+			population.sort_Chemins();
+			m.print_pop(population);
+			generation_nbr++;
+		}
+		System.out.println("best chemin ");
+		System.out.println(population.getChemins().get(0));
+		System.out.println("best distance = "+population.getChemins().get(0).getDistance_total());
+		
+		
+	}
+	public void print_pop(Population population) {
+		population.getChemins().forEach(x->{
+			System.out.println(Arrays.toString(x.getVilles().toArray())+"| "+
+			String.format("%.4f", x.getFitness())+" | "+String.format("%.2f",x.getDistance_total()));
+		});
+		System.out.println("");
+		*/
+		
+		//RS
+		//Chemin chemin = new Chemin(villes);
+		//Recuit_Simule RS = new Recuit_Simule(chemin);
+		//Chemin ch = RS.Start();
+		//System.out.println("dist = "+ch.getDistance_total());
+		//System.out.println(ch.printChemin());
+		//HC hc =new HC(chemin);
+		//RecuitSimule rs = new RecuitSimule(chemin);
+		//double x = Math.random()*10;
+		//System.out.println((int)Math.floor(x));
+		//EHO eho = new EHO(chemin);
+		//eho.optimiser(200);
+		//TwoOpt Two_opt = new TwoOpt(chemin);
+		//Chemin ch = Two_opt.TwoOpt_Start();
+		//System.out.println(ch.printChemin());
+		//System.out.println(ch.getDistance_total());
+		
+		
+	
+	}
+
+}
